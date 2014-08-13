@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+	<head>
+		<title>Residuals</title>
+		<script type="text/javascript" src="d3.min.js"></script>
+	</head>
+	<body>
+		<script>			
+			var MAX = 25;
+			var STEP = 30;
+			var dim = MAX * STEP + (STEP / 2);
+			
+			// Create an array with pairs of points to plot
+			var grid_points = new Array(MAX * (MAX - 1) / 2);
+			var index = 0;
+			for (var i = 0; i < MAX; i++) {
+				for (var j = 0; j < i; j++) {
+					grid_points[index] = [i + 1, j + 1];
+					index++;
+				}
+			}
+			
+			// Scale function to map residues to color values
+			var color_scale = d3.scale.linear()
+							.domain([0, MAX])
+							.range(["cyan", "navy"]);
+			
+			// Create an svg element (a d3 figure)
+			var svg = d3.select("body").append("svg")
+				.attr("width", dim)
+				.attr("height", dim);
+			
+			// Set all the properties and plot the figure
+			svg.selectAll("circle")
+				.data(grid_points)
+				.enter()
+				.append("circle")
+				.attr("cx", function(d) { 
+					return (dim - STEP * d[0]) / 2. + STEP * d[1]; })
+				.attr("cy", function(d) { return STEP * d[0]; })
+				.attr("r", STEP / 2)
+				.style("fill", function(d) { 
+						return color_scale(d[1] * d[1] % d[0]); })
+				.append("title") // for mouseover
+				.text(function(d) { return d[1] * d[1] % d[0]; });
+		</script>
+	</body>
+</html>
